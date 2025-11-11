@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import { Plus, Trash2, TrendingDown, Wallet, Edit2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Expense {
@@ -13,7 +13,6 @@ interface Expense {
   amount: number;
   category: string;
   date: string;
-  type: "income" | "expense";
 }
 
 const ExpenseTracker = () => {
@@ -22,7 +21,24 @@ const ExpenseTracker = () => {
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
-  const [type, setType] = useState<"income" | "expense">("expense");
+  const [budget, setBudget] = useState(0);
+  const [isEditingBudget, setIsEditingBudget] = useState(false);
+  const [budgetInput, setBudgetInput] = useState("");
+
+  useEffect(() => {
+    const savedExpenses = localStorage.getItem("expenses");
+    const savedBudget = localStorage.getItem("budget");
+    if (savedExpenses) setExpenses(JSON.parse(savedExpenses));
+    if (savedBudget) setBudget(parseFloat(savedBudget));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("expenses", JSON.stringify(expenses));
+  }, [expenses]);
+
+  useEffect(() => {
+    localStorage.setItem("budget", budget.toString());
+  }, [budget]);
 
   const categories = [
     "Food", "Transport", "Shopping", "Entertainment", "Bills", "Education", "Health", "Others"
@@ -44,7 +60,6 @@ const ExpenseTracker = () => {
       amount: parseFloat(amount),
       category,
       date: new Date().toISOString().split("T")[0],
-      type,
     };
 
     setExpenses([newExpense, ...expenses]);
@@ -54,8 +69,20 @@ const ExpenseTracker = () => {
 
     toast({
       title: "Added successfully",
-      description: `${type === "income" ? "Income" : "Expense"} of ₹${amount} added`,
+      description: `Expense of ₹${amount} added`,
     });
+  };
+
+  const handleBudgetSave = () => {
+    const newBudget = parseFloat(budgetInput);
+    if (!isNaN(newBudget) && newBudget >= 0) {
+      setBudget(newBudget);
+      setIsEditingBudget(false);
+      toast({
+        title: "Budget updated",
+        description: `Total expense set to ₹${newBudget.toFixed(2)}`,
+      });
+    }
   };
 
   const deleteExpense = (id: string) => {
@@ -66,15 +93,8 @@ const ExpenseTracker = () => {
     });
   };
 
-  const totalIncome = expenses
-    .filter((exp) => exp.type === "income")
-    .reduce((sum, exp) => sum + exp.amount, 0);
-
-  const totalExpense = expenses
-    .filter((exp) => exp.type === "expense")
-    .reduce((sum, exp) => sum + exp.amount, 0);
-
-  const balance = totalIncome - totalExpense;
+  const totalExpense = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+  const remaining = budget - totalExpense;
 
   return (
     <div className="min-h-screen pt-16 py-8 px-4">
@@ -88,38 +108,65 @@ const ExpenseTracker = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Balance</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Expense (Budget)</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center">
-                <Wallet className="h-4 w-4 mr-2 text-primary" />
-                <p className={`text-2xl font-bold ${balance >= 0 ? 'text-success' : 'text-destructive'}`}>
-                  ₹{balance.toFixed(2)}
-                </p>
-              </div>
+              {isEditingBudget ? (
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    value={budgetInput}
+                    onChange={(e) => setBudgetInput(e.target.value)}
+                    placeholder="Enter budget"
+                    className="h-8"
+                    autoFocus
+                  />
+                  <Button size="sm" onClick={handleBudgetSave}>Save</Button>
+                  <Button size="sm" variant="ghost" onClick={() => setIsEditingBudget(false)}>Cancel</Button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <Wallet className="h-4 w-4 mr-2 text-primary" />
+                    <p className="text-2xl font-bold text-primary">₹{budget.toFixed(2)}</p>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    onClick={() => {
+                      setBudgetInput(budget.toString());
+                      setIsEditingBudget(true);
+                    }}
+                  >
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Income</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center">
-                <TrendingUp className="h-4 w-4 mr-2 text-success" />
-                <p className="text-2xl font-bold text-success">₹{totalIncome.toFixed(2)}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Expenses</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Spent</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center">
                 <TrendingDown className="h-4 w-4 mr-2 text-destructive" />
                 <p className="text-2xl font-bold text-destructive">₹{totalExpense.toFixed(2)}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Remaining</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center">
+                <Wallet className="h-4 w-4 mr-2 text-success" />
+                <p className={`text-2xl font-bold ${remaining >= 0 ? 'text-success' : 'text-destructive'}`}>
+                  ₹{remaining.toFixed(2)}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -132,12 +179,12 @@ const ExpenseTracker = () => {
             <CardDescription>Record your income or expense</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="md:col-span-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Items</Label>
                 <Input
                   id="description"
-                  placeholder="Enter description"
+                  placeholder="Enter items"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
@@ -170,20 +217,8 @@ const ExpenseTracker = () => {
                 </Select>
               </div>
 
-              <div className="flex items-end gap-2">
-                <div className="flex-1">
-                  <Label htmlFor="type">Type</Label>
-                  <Select value={type} onValueChange={(val) => setType(val as "income" | "expense")}>
-                    <SelectTrigger id="type">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="income">Income</SelectItem>
-                      <SelectItem value="expense">Expense</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button onClick={addExpense} className="whitespace-nowrap">
+              <div className="flex items-end">
+                <Button onClick={addExpense} className="w-full">
                   <Plus className="h-4 w-4 mr-1" />
                   Add
                 </Button>
@@ -217,12 +252,8 @@ const ExpenseTracker = () => {
                       </p>
                     </div>
                     <div className="flex items-center gap-4">
-                      <p
-                        className={`text-lg font-bold ${
-                          expense.type === "income" ? "text-success" : "text-destructive"
-                        }`}
-                      >
-                        {expense.type === "income" ? "+" : "-"}₹{expense.amount.toFixed(2)}
+                      <p className="text-lg font-bold text-destructive">
+                        -₹{expense.amount.toFixed(2)}
                       </p>
                       <Button
                         variant="ghost"

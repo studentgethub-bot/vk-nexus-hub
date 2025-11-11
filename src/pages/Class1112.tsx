@@ -39,17 +39,17 @@ const Class1112 = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {streams.map((stream, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
+            <Card key={index} className="hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
               <CardHeader>
-                <stream.icon className={`h-10 w-10 mb-2 ${stream.color}`} />
+                <stream.icon className={`h-10 w-10 mb-2 ${stream.color} transition-transform duration-300 hover:scale-110`} />
                 <CardTitle className="text-2xl">{stream.name}</CardTitle>
                 <CardDescription>Advanced concepts and problem solving</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
                   {stream.topics.map((topic, idx) => (
-                    <li key={idx} className="flex items-center text-muted-foreground">
-                      <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
+                    <li key={idx} className="flex items-center text-muted-foreground hover:text-foreground transition-colors duration-200 cursor-pointer group">
+                      <span className="w-2 h-2 bg-primary rounded-full mr-2 group-hover:scale-150 transition-transform duration-200"></span>
                       {topic}
                     </li>
                   ))}

@@ -6,25 +6,25 @@ const Class910 = () => {
     {
       icon: Calculator,
       name: "Mathematics",
-      topics: ["Algebra", "Geometry", "Trigonometry", "Statistics"],
+      topics: ["Number Systems", "Algebra", "Geometry", "Trigonometry", "Statistics", "Probability", "Coordinate Geometry", "Mensuration"],
       color: "text-primary",
     },
     {
       icon: FlaskConical,
       name: "Science",
-      topics: ["Physics", "Chemistry", "Biology"],
+      topics: ["Physics - Motion & Laws", "Physics - Energy & Work", "Chemistry - Atoms & Molecules", "Chemistry - Acids & Bases", "Biology - Cell Structure", "Biology - Genetics", "Environmental Science"],
       color: "text-accent",
     },
     {
       icon: Globe,
-      name: "Social Studies",
-      topics: ["History", "Geography", "Civics", "Economics"],
+      name: "Social Studies (SST)",
+      topics: ["History - World Wars", "History - Indian Freedom Struggle", "Geography - Climate & Resources", "Geography - Agriculture & Industries", "Civics - Democracy & Constitution", "Economics - Development & Sectors"],
       color: "text-success",
     },
     {
       icon: BookOpen,
-      name: "Languages",
-      topics: ["English", "Hindi", "Sanskrit"],
+      name: "English",
+      topics: ["Reading Comprehension", "Writing Skills", "Grammar & Vocabulary", "Literature - Prose", "Literature - Poetry", "Letter & Essay Writing"],
       color: "text-info",
     },
   ];
@@ -39,17 +39,17 @@ const Class910 = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {subjects.map((subject, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
+            <Card key={index} className="hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
               <CardHeader>
-                <subject.icon className={`h-10 w-10 mb-2 ${subject.color}`} />
+                <subject.icon className={`h-10 w-10 mb-2 ${subject.color} transition-transform duration-300 hover:scale-110`} />
                 <CardTitle className="text-2xl">{subject.name}</CardTitle>
                 <CardDescription>Core topics and concepts</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
                   {subject.topics.map((topic, idx) => (
-                    <li key={idx} className="flex items-center text-muted-foreground">
-                      <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
+                    <li key={idx} className="flex items-center text-muted-foreground hover:text-foreground transition-colors duration-200 cursor-pointer group">
+                      <span className="w-2 h-2 bg-primary rounded-full mr-2 group-hover:scale-150 transition-transform duration-200"></span>
                       {topic}
                     </li>
                   ))}
