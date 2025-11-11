@@ -40,21 +40,48 @@ const Class1112 = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {streams.map((stream, index) => (
             <Card key={index} className="hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-              <CardHeader>
-                <stream.icon className={`h-10 w-10 mb-2 ${stream.color} transition-transform duration-300 hover:scale-110`} />
-                <CardTitle className="text-2xl">{stream.name}</CardTitle>
-                <CardDescription>Advanced concepts and problem solving</CardDescription>
+              <CardHeader className="relative overflow-hidden group">
+                <stream.icon className={`h-10 w-10 mb-2 ${stream.color} transition-transform duration-300 group-hover:scale-110 relative z-10`} />
+                <CardTitle className="text-2xl relative z-10 group-hover:scale-105 transition-transform duration-300">{stream.name}</CardTitle>
+                <CardDescription className="relative z-10">Advanced concepts and problem solving</CardDescription>
+                
+                {/* Animated background symbols */}
+                {stream.name === "Mathematics" && (
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none">
+                    <span className="absolute top-4 left-10 text-4xl animate-[float_3s_ease-in-out_infinite]">∂</span>
+                    <span className="absolute top-12 right-8 text-3xl animate-[float_4s_ease-in-out_infinite_0.5s]">∞</span>
+                    <span className="absolute bottom-8 left-16 text-2xl animate-[float_3.5s_ease-in-out_infinite_1s]">∫</span>
+                    <span className="absolute bottom-4 right-12 text-3xl animate-[float_4.5s_ease-in-out_infinite_1.5s]">λ</span>
+                  </div>
+                )}
+                
+                {stream.name === "Physics" && (
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none">
+                    <span className="absolute top-4 left-10 text-4xl animate-[float_3s_ease-in-out_infinite]">⚡</span>
+                    <span className="absolute top-12 right-8 text-3xl animate-[float_4s_ease-in-out_infinite_0.5s]">⚛</span>
+                    <span className="absolute bottom-8 left-16 text-2xl animate-[float_3.5s_ease-in-out_infinite_1s]">🔬</span>
+                    <span className="absolute bottom-4 right-12 text-3xl animate-[float_4.5s_ease-in-out_infinite_1.5s]">🌊</span>
+                  </div>
+                )}
+                
+                {stream.name === "Chemistry" && (
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none">
+                    <span className="absolute top-4 left-10 text-4xl animate-[float_3s_ease-in-out_infinite]">🧪</span>
+                    <span className="absolute top-12 right-8 text-3xl animate-[float_4s_ease-in-out_infinite_0.5s]">⚗</span>
+                    <span className="absolute bottom-8 left-16 text-2xl animate-[float_3.5s_ease-in-out_infinite_1s]">H₂O</span>
+                    <span className="absolute bottom-4 right-12 text-3xl animate-[float_4.5s_ease-in-out_infinite_1.5s]">⚛</span>
+                  </div>
+                )}
+                
+                {stream.name === "Computer Science" && (
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none">
+                    <span className="absolute top-4 left-10 text-4xl animate-[float_3s_ease-in-out_infinite]">{'<>'}</span>
+                    <span className="absolute top-12 right-8 text-3xl animate-[float_4s_ease-in-out_infinite_0.5s]">💻</span>
+                    <span className="absolute bottom-8 left-16 text-2xl animate-[float_3.5s_ease-in-out_infinite_1s]">{ }</span>
+                    <span className="absolute bottom-4 right-12 text-3xl animate-[float_4.5s_ease-in-out_infinite_1.5s]">01</span>
+                  </div>
+                )}
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {stream.topics.map((topic, idx) => (
-                    <li key={idx} className="flex items-center text-muted-foreground hover:text-foreground transition-colors duration-200 cursor-pointer group">
-                      <span className="w-2 h-2 bg-primary rounded-full mr-2 group-hover:scale-150 transition-transform duration-200"></span>
-                      {topic}
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
             </Card>
           ))}
         </div>
