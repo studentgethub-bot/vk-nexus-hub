@@ -1,7 +1,12 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Book, Code, FlaskConical, Briefcase } from "lucide-react";
+import AdminFileUpload from "@/components/AdminFileUpload";
+import FileList from "@/components/FileList";
+import { useAuth } from "@/hooks/useAuth";
 
 const College = () => {
+  const { isAdmin, loading } = useAuth();
+  
   const resources = [
     {
       icon: Code,
@@ -81,33 +86,15 @@ const College = () => {
           ))}
         </div>
 
-        <Card className="mt-8 bg-muted/50">
-          <CardHeader>
-            <CardTitle className="text-2xl">Featured Resources</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Lecture Notes</CardTitle>
-                  <CardDescription>Comprehensive study materials</CardDescription>
-                </CardHeader>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Practice Problems</CardTitle>
-                  <CardDescription>Hands-on problem solving</CardDescription>
-                </CardHeader>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Projects</CardTitle>
-                  <CardDescription>Real-world applications</CardDescription>
-                </CardHeader>
-              </Card>
-            </div>
-          </CardContent>
-        </Card>
+        {!loading && isAdmin && (
+          <div className="mt-8">
+            <AdminFileUpload category="college" title="Upload College Resources" />
+          </div>
+        )}
+
+        <div className="mt-8">
+          <FileList category="college" title="College Resources" />
+        </div>
       </div>
     </div>
   );

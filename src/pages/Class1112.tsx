@@ -1,7 +1,12 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, Calculator, FlaskConical, Laptop } from "lucide-react";
+import AdminFileUpload from "@/components/AdminFileUpload";
+import FileList from "@/components/FileList";
+import { useAuth } from "@/hooks/useAuth";
 
 const Class1112 = () => {
+  const { isAdmin, loading } = useAuth();
+  
   const streams = [
     {
       icon: Calculator,
@@ -86,30 +91,15 @@ const Class1112 = () => {
           ))}
         </div>
 
-        <Card className="mt-8 bg-primary text-primary-foreground">
-          <CardHeader>
-            <CardTitle className="text-2xl">Board Exam Preparation</CardTitle>
-            <CardDescription className="text-primary-foreground/90">
-              Comprehensive resources for CBSE, ICSE, and State Board examinations
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2">
-              <li className="flex items-center">
-                <BookOpen className="h-5 w-5 mr-2" />
-                Previous year question papers
-              </li>
-              <li className="flex items-center">
-                <BookOpen className="h-5 w-5 mr-2" />
-                Sample papers and mock tests
-              </li>
-              <li className="flex items-center">
-                <BookOpen className="h-5 w-5 mr-2" />
-                Detailed solutions and explanations
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
+        {!loading && isAdmin && (
+          <div className="mt-8">
+            <AdminFileUpload category="class-11-12" title="Upload Study Materials for Class 11-12" />
+          </div>
+        )}
+
+        <div className="mt-8">
+          <FileList category="class-11-12" title="Study Materials" />
+        </div>
       </div>
     </div>
   );

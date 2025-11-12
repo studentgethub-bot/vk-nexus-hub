@@ -1,7 +1,12 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, Calculator, FlaskConical, Globe } from "lucide-react";
+import AdminFileUpload from "@/components/AdminFileUpload";
+import FileList from "@/components/FileList";
+import { useAuth } from "@/hooks/useAuth";
 
 const Class910 = () => {
+  const { isAdmin, loading } = useAuth();
+  
   const subjects = [
     {
       icon: Calculator,
@@ -86,15 +91,15 @@ const Class910 = () => {
           ))}
         </div>
 
-        <Card className="mt-8 bg-muted/50">
-          <CardHeader>
-            <CardTitle>Coming Soon</CardTitle>
-            <CardDescription>
-              We're working on adding comprehensive study materials, practice questions, and video tutorials
-              for all subjects. Stay tuned!
-            </CardDescription>
-          </CardHeader>
-        </Card>
+        {!loading && isAdmin && (
+          <div className="mt-8">
+            <AdminFileUpload category="class-9-10" title="Upload Study Materials for Class 9-10" />
+          </div>
+        )}
+
+        <div className="mt-8">
+          <FileList category="class-9-10" title="Study Materials" />
+        </div>
       </div>
     </div>
   );

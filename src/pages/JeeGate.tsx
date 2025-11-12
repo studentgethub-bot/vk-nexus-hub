@@ -1,7 +1,12 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Brain, Target, Trophy, BookOpen } from "lucide-react";
+import AdminFileUpload from "@/components/AdminFileUpload";
+import FileList from "@/components/FileList";
+import { useAuth } from "@/hooks/useAuth";
 
 const JeeGate = () => {
+  const { isAdmin, loading } = useAuth();
+  
   const examSections = [
     {
       icon: Target,
@@ -73,12 +78,11 @@ const JeeGate = () => {
                 Solve past exam papers to understand patterns
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                <li>• Last 10 years question papers</li>
-                <li>• Detailed solutions with explanations</li>
-                <li>• Topic-wise analysis</li>
-              </ul>
+            <CardContent className="space-y-4">
+              {!loading && isAdmin && (
+                <AdminFileUpload category="jee-gate-pyq" title="Upload Previous Year Papers" />
+              )}
+              <FileList category="jee-gate-pyq" title="Previous Year Papers" />
             </CardContent>
           </Card>
 
@@ -90,12 +94,11 @@ const JeeGate = () => {
                 Practice with timed mock examinations
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                <li>• Full-length practice tests</li>
-                <li>• Performance analytics</li>
-                <li>• Adaptive difficulty levels</li>
-              </ul>
+            <CardContent className="space-y-4">
+              {!loading && isAdmin && (
+                <AdminFileUpload category="jee-gate-mock" title="Upload Mock Tests" />
+              )}
+              <FileList category="jee-gate-mock" title="Mock Tests" />
             </CardContent>
           </Card>
         </div>
