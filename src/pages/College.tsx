@@ -72,7 +72,7 @@ const College = () => {
                 <CardTitle className="text-2xl">{resource.title}</CardTitle>
                 <CardDescription>Essential topics and skills</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <ul className="space-y-2">
                   {resource.topics.map((topic, idx) => (
                     <li key={idx} className="flex items-center text-muted-foreground">
@@ -81,20 +81,22 @@ const College = () => {
                     </li>
                   ))}
                 </ul>
+                
+                {!loading && isAdmin && (
+                  <AdminFileUpload 
+                    category={`college-${resource.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                    title={`Upload for ${resource.title}`}
+                  />
+                )}
+                <FileList 
+                  category={`college-${resource.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                  title={`${resource.title} Materials`}
+                />
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {!loading && isAdmin && (
-          <div className="mt-8">
-            <AdminFileUpload category="college" title="Upload College Resources" />
-          </div>
-        )}
-
-        <div className="mt-8">
-          <FileList category="college" title="College Resources" />
-        </div>
       </div>
     </div>
   );

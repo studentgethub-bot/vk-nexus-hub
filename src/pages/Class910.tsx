@@ -87,18 +87,21 @@ const Class910 = () => {
                   </div>
                 )}
               </CardHeader>
+              
+              <CardContent className="space-y-4">
+                {!loading && isAdmin && (
+                  <AdminFileUpload 
+                    category={`class-9-10-${subject.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                    title={`Upload for ${subject.name}`}
+                  />
+                )}
+                <FileList 
+                  category={`class-9-10-${subject.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                  title={`${subject.name} Materials`}
+                />
+              </CardContent>
             </Card>
           ))}
-        </div>
-
-        {!loading && isAdmin && (
-          <div className="mt-8">
-            <AdminFileUpload category="class-9-10" title="Upload Study Materials for Class 9-10" />
-          </div>
-        )}
-
-        <div className="mt-8">
-          <FileList category="class-9-10" title="Study Materials" />
         </div>
       </div>
     </div>

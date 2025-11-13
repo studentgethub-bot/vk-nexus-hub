@@ -87,19 +87,23 @@ const Class1112 = () => {
                   </div>
                 )}
               </CardHeader>
+              
+              <CardContent className="space-y-4">
+                {!loading && isAdmin && (
+                  <AdminFileUpload 
+                    category={`class-11-12-${stream.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                    title={`Upload for ${stream.name}`}
+                  />
+                )}
+                <FileList 
+                  category={`class-11-12-${stream.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                  title={`${stream.name} Materials`}
+                />
+              </CardContent>
             </Card>
           ))}
         </div>
 
-        {!loading && isAdmin && (
-          <div className="mt-8">
-            <AdminFileUpload category="class-11-12" title="Upload Study Materials for Class 11-12" />
-          </div>
-        )}
-
-        <div className="mt-8">
-          <FileList category="class-11-12" title="Study Materials" />
-        </div>
       </div>
     </div>
   );
