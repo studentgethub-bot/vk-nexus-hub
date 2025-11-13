@@ -15,7 +15,6 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -52,50 +51,26 @@ const Login = () => {
     }
   };
 
-  const handleAdminAuth = async (e: React.FormEvent) => {
+  const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    if (isSignUp) {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: window.location.origin,
-        }
-      });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-      if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Success",
-          description: "Admin account created! You can now sign in.",
-        });
-        setIsSignUp(false);
-      }
+    if (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     } else {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      toast({
+        title: "Success",
+        description: "Logged in as admin",
       });
-
-      if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Success",
-          description: "Logged in as admin",
-        });
-      }
     }
     
     setLoading(false);
@@ -134,13 +109,13 @@ const Login = () => {
             </TabsContent>
             
             <TabsContent value="admin" className="space-y-4">
-              <form onSubmit={handleAdminAuth} className="space-y-4">
+              <form onSubmit={handleAdminLogin} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="admin@example.com"
+                    placeholder="admin101@gmail.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -160,19 +135,8 @@ const Login = () => {
                 </div>
                 
                 <Button type="submit" className="w-full" size="lg" disabled={loading}>
-                  {loading ? (isSignUp ? "Creating account..." : "Signing in...") : (isSignUp ? "Create Admin Account" : "Sign in as Admin")}
+                  {loading ? "Signing in..." : "Sign in as Admin"}
                 </Button>
-                
-                <div className="text-center">
-                  <Button
-                    type="button"
-                    variant="link"
-                    onClick={() => setIsSignUp(!isSignUp)}
-                    className="text-sm"
-                  >
-                    {isSignUp ? "Already have an account? Sign in" : "Need to create an account? Sign up"}
-                  </Button>
-                </div>
               </form>
             </TabsContent>
           </Tabs>
