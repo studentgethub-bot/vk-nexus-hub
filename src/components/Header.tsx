@@ -73,11 +73,7 @@ const Header = () => {
   };
 
   const handleContactClick = () => {
-    window.open("mailto:studentgethub@gmail.com", "_blank");
-  };
-
-  const handleRaiseIssueClick = () => {
-    window.open("mailto:studentgethub@gmail.com?subject=Issue Report", "_blank");
+    window.open("https://mail.google.com/mail/?view=cm&fs=1&to=studentgethub@gmail.com", "_blank");
   };
 
   const navItems = [
@@ -150,26 +146,15 @@ const Header = () => {
                     <Separator />
                     <div className="space-y-2">
                       <p className="text-sm font-medium">Support</p>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1"
-                          onClick={handleContactClick}
-                        >
-                          <Mail className="h-4 w-4 mr-2" />
-                          Contact
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1"
-                          onClick={handleRaiseIssueClick}
-                        >
-                          <Mail className="h-4 w-4 mr-2" />
-                          Raise Issue
-                        </Button>
-                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={handleContactClick}
+                      >
+                        <Mail className="h-4 w-4 mr-2" />
+                        Contact Us
+                      </Button>
                     </div>
                     <Separator />
                     <Button
