@@ -1,10 +1,12 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, LogOut } from "lucide-react";
+import { Moon, Sun, LogOut, User, Mail } from "lucide-react";
 import { useState, useEffect } from "react";
 import vkLogo from "@/assets/vk-logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
 
 const Header = () => {
   const location = useLocation();
@@ -12,6 +14,8 @@ const Header = () => {
   const { toast } = useToast();
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
@@ -23,11 +27,22 @@ const Header = () => {
     // Check if user is logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsLoggedIn(!!session);
+      if (session?.user) {
+        setUserEmail(session.user.email || "");
+        setUserName(session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || "User");
+      }
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setIsLoggedIn(!!session);
+      if (session?.user) {
+        setUserEmail(session.user.email || "");
+        setUserName(session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || "User");
+      } else {
+        setUserEmail("");
+        setUserName("");
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -55,6 +70,14 @@ const Header = () => {
       });
       navigate("/login");
     }
+  };
+
+  const handleContactClick = () => {
+    window.open("mailto:studentgethub@gmail.com", "_blank");
+  };
+
+  const handleRaiseIssueClick = () => {
+    window.open("mailto:studentgethub@gmail.com?subject=Issue Report", "_blank");
   };
 
   const navItems = [
@@ -90,17 +113,79 @@ const Header = () => {
                 </Button>
               </Link>
             ))}
+            
             {isLoggedIn && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLogout}
-                className="ml-2"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="sm" className="ml-2">
+                    <User className="h-4 w-4 mr-2" />
+                    My Account
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80" align="end">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <h4 className="font-medium leading-none">Account Details</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Your profile information
+                      </p>
+                    </div>
+                    <Separator />
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3">
+                        <User className="h-4 w-4 mt-1 text-muted-foreground" />
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium">Username</p>
+                          <p className="text-sm text-muted-foreground">{userName}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <Mail className="h-4 w-4 mt-1 text-muted-foreground" />
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium">Email</p>
+                          <p className="text-sm text-muted-foreground">{userEmail}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <Separator />
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium">Support</p>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={handleContactClick}
+                        >
+                          <Mail className="h-4 w-4 mr-2" />
+                          Contact
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={handleRaiseIssueClick}
+                        >
+                          <Mail className="h-4 w-4 mr-2" />
+                          Raise Issue
+                        </Button>
+                      </div>
+                    </div>
+                    <Separator />
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={handleLogout}
+                      className="w-full"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Logout
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
             )}
+            
             <Button
               variant="ghost"
               size="sm"
