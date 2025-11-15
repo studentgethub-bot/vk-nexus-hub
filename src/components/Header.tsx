@@ -98,17 +98,19 @@ const Header = () => {
 
           {/* Navigation */}
           <nav className="hidden lg:flex items-center space-x-1">
-            {navItems.map((item) => (
-              <Link key={item.path} to={item.path}>
-                <Button
-                  variant={location.pathname === item.path ? "default" : "ghost"}
-                  size="sm"
-                  className="font-medium"
-                >
-                  {item.label}
-                </Button>
-              </Link>
-            ))}
+            {navItems
+              .filter((item) => item.path !== "/login" || !isLoggedIn)
+              .map((item) => (
+                <Link key={item.path} to={item.path}>
+                  <Button
+                    variant={location.pathname === item.path ? "default" : "ghost"}
+                    size="sm"
+                    className="font-medium"
+                  >
+                    {item.label}
+                  </Button>
+                </Link>
+              ))}
             
             {isLoggedIn && (
               <Popover>
