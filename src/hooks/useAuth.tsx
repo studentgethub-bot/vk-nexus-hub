@@ -25,15 +25,8 @@ export const useAuth = () => {
         return;
       }
 
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .eq('role', 'admin')
-        .maybeSingle();
-
-      if (error) throw error;
-      setIsAdmin(!!data);
+      // Hardcoded admin check - works offline without database
+      setIsAdmin(user.email === 'admin101@gmail.com');
     } catch (error) {
       console.error('Error checking admin status:', error);
       setIsAdmin(false);
