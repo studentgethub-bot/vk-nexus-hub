@@ -2,19 +2,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
+// HARDCODED ADMIN CREDENTIALS - For development purposes only
+const ADMIN_EMAIL = "admin101@gmail.com";
+const ADMIN_PASSWORD = "admin101@pass";
+
 const Login = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
+  const [adminEmail, setAdminEmail] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -35,13 +39,13 @@ const Login = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleUserLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+      email: userEmail,
+      password: userPassword,
     });
 
     if (error) {
@@ -53,48 +57,44 @@ const Login = () => {
     } else {
       toast({
         title: "Success",
-        description: email === "admin101@gmail.com" ? "Logged in as admin" : "Logged in successfully",
+        description: "Logged in successfully",
       });
+      navigate("/");
     }
     
     setLoading(false);
   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (password !== confirmPassword) {
-      toast({
-        title: "Error",
-        description: "Passwords do not match",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          name: name,
-        },
-        emailRedirectTo: window.location.origin,
-      }
-    });
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
+    // Check hardcoded admin credentials first
+    if (adminEmail === ADMIN_EMAIL && adminPassword === ADMIN_PASSWORD) {
+      // Authenticate with Supabase using admin credentials
+      const { error } = await supabase.auth.signInWithPassword({
+        email: ADMIN_EMAIL,
+        password: ADMIN_PASSWORD,
       });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Admin authentication failed",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "Logged in as admin",
+        });
+        navigate("/");
+      }
     } else {
       toast({
-        title: "Success",
-        description: "Account created successfully",
+        title: "Error",
+        description: "Invalid admin credentials",
+        variant: "destructive",
       });
     }
     
@@ -105,125 +105,82 @@ const Login = () => {
     <div className="min-h-screen pt-16 flex items-center justify-center px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-3xl font-bold">
-            {isSignUp ? "Create Account" : "Welcome Back"}
-          </CardTitle>
+          <CardTitle className="text-3xl font-bold">Welcome Back</CardTitle>
           <CardDescription>
-            {isSignUp 
-              ? "Sign up to access your expense tracker and notes" 
-              : "Sign in to access your expense tracker and notes"}
+            Sign in to access your account
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {isSignUp ? (
-            <form onSubmit={handleSignUp} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Enter your name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="Confirm password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <Button type="submit" className="w-full" size="lg" disabled={loading}>
-                {loading ? "Creating account..." : "Create Account"}
-              </Button>
-
-              <div className="text-center text-sm">
-                <span className="text-muted-foreground">Already have an account? </span>
-                <Button
-                  type="button"
-                  variant="link"
-                  className="p-0 h-auto font-normal"
-                  onClick={() => setIsSignUp(false)}
-                >
-                  Sign in
+          <Tabs defaultValue="user" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="user">User</TabsTrigger>
+              <TabsTrigger value="admin">Admin</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="user">
+              <form onSubmit={handleUserLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="user-email">Email</Label>
+                  <Input
+                    id="user-email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={userEmail}
+                    onChange={(e) => setUserEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="user-password">Password</Label>
+                  <Input
+                    id="user-password"
+                    type="password"
+                    placeholder="Enter password"
+                    value={userPassword}
+                    onChange={(e) => setUserPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <Button type="submit" className="w-full" size="lg" disabled={loading}>
+                  {loading ? "Signing in..." : "Sign In"}
                 </Button>
-              </div>
-            </form>
-          ) : (
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <Button type="submit" className="w-full" size="lg" disabled={loading}>
-                {loading ? "Signing in..." : "Sign In"}
-              </Button>
-
-              <div className="text-center text-sm">
-                <span className="text-muted-foreground">Don't have an account? </span>
-                <Button
-                  type="button"
-                  variant="link"
-                  className="p-0 h-auto font-normal"
-                  onClick={() => setIsSignUp(true)}
-                >
-                  Create account
+              </form>
+            </TabsContent>
+            
+            <TabsContent value="admin">
+              <form onSubmit={handleAdminLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="admin-email">Admin Email</Label>
+                  <Input
+                    id="admin-email"
+                    type="email"
+                    placeholder="Enter admin email"
+                    value={adminEmail}
+                    onChange={(e) => setAdminEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="admin-password">Admin Password</Label>
+                  <Input
+                    id="admin-password"
+                    type="password"
+                    placeholder="Enter admin password"
+                    value={adminPassword}
+                    onChange={(e) => setAdminPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <Button type="submit" className="w-full" size="lg" disabled={loading}>
+                  {loading ? "Signing in..." : "Sign In as Admin"}
                 </Button>
-              </div>
-            </form>
-          )}
+              </form>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
     </div>
